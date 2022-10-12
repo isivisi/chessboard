@@ -15,7 +15,7 @@
 		</div>
 
 		<div style="grid-area:moves; max-width:200px;">
-			{{moves}}
+			<movelistview ref="movelist"></movelistview>
 		</div>
 
 		
@@ -54,7 +54,8 @@
 		},
 
 		components: {
-			board: () => import("@/components/board.vue")
+			board: () => import("@/components/board.vue"),
+			movelistview: () => import("@/components/movelistview.vue")
 		},
 
 		watch: {
@@ -95,6 +96,7 @@
 
 			onMove(move) {
 				this.boardState = move;
+				this.$refs.movelist.addState(move);
 				if (this.dataConnection) this.dataConnection.send(move);
 			},
 
