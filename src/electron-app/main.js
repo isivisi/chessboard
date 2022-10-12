@@ -19,10 +19,9 @@ const createWindow = () => {
 	});
 
 	// Remove menu from browser window.
-	if (!process.env.NODE_ENV === "development") mainWindow.setMenu(null);
+	if (process.env.NODE_ENV != "development") mainWindow.setMenu(null);
 
-	//if (process.env.NODE_ENV === "development") mainWindow.setAspectRatio(0.85);
-	//else mainWindow.setAspectRatio(0.65)
+	if (process.env.NODE_ENV != "development") mainWindow.setAspectRatio(1);
 
 	// Load the index.html of the app.
 	mainWindow.loadURL(process.env.NODE_ENV === "development" ? format({
