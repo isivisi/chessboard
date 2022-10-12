@@ -9,8 +9,10 @@ var crypto = require("crypto");
 
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+
+const uniqueRoomKey = crypto.randomBytes(4).toString('hex');
  
-Vue.use(VuePeerJS, new Peer(crypto.randomBytes(4).toString('hex'), {}));
+Vue.use(VuePeerJS, new Peer(uniqueRoomKey, {}));
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 

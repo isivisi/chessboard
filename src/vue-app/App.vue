@@ -15,8 +15,6 @@
 
 	"use strict";
 
-	var crypto = require("crypto");
-
 	export default {
 		name: "App",
 
@@ -42,18 +40,22 @@
 
 		mounted() {
 			
-			this.roomCode = this.$peer.id; //crypto.randomBytes(4).toString('hex');
+			this.roomCode = this.$peer.id;
 
-			this.$peer.on('connection', (conn) => { 
+			// On someone joined you
+			/*this.$peer.on('connection', (conn) => { 
+				console.log('someone has joined your room');
 				this.dataConnection = conn;
 				conn.send(this.boardState); // send room boardstate
 
 				conn.on('data', (data) => {
-					console.log("peerjs", data);
+					console.log('recieved change from host', data);
 					this.boardState = data;
 					this.shownFen = data.fen;
 				});
-			});
+			});*/
+
+			this.initDataConnection();
 		},
 
 		methods: {
@@ -70,11 +72,18 @@
 
 				this.dataConnection = this.$peer.connect(this.roomCode);
 
-				this.dataConnection.on('connection', (conn) => {
+				this.dataConnection.on('data', (data) => {
+					console.log('recieved change', data);
+					this.boardState = data;
+					this.shownFen = data.fen;
+				});
+
+				// You joining someone
+				this.$peer.on('connection', (conn) => {
 					console.log("connection started");
 					this.dataConnection = conn;
-					conn.on('data', function(data){
-						console.log("peerjs", data);
+					conn.on('data', (data) => {
+						console.log('recieved change', data);
 						this.boardState = data;
 						this.shownFen = data.fen;
 					});

@@ -90,7 +90,7 @@
 		methods: {
 			// https://github.com/vitogit/vue-chessboard/blob/master/src/components/chessboard/index.vue
 			possibleMoves () {
-				return [];
+				return null;
 				const dests = {}
 				this.game.SQUARES.forEach(s => {
 					const ms = this.game.moves({square: s, verbose: true})
