@@ -10,7 +10,7 @@
 			</b-row>
 		</div>
 
-		<div style="grid-area:moves; max-width:200px;">
+		<div style="grid-area:moves; display:flex; max-width:200px;">
 			<movelistview ref="movelist"></movelistview>
 		</div>
 

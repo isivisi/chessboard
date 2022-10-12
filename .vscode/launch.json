@@ -1,0 +1,29 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "dev",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}",
+        "runtimeExecutable": "npm",
+        "windows": {
+          "runtimeExecutable": "npm"
+        },
+        "args" : ["run", "dev"],
+        "outputCapture": "std"
+      },
+      {
+        "name": "start",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}",
+        "runtimeExecutable": "npm",
+        "windows": {
+          "runtimeExecutable": "npm"
+        },
+        "args" : ["run", "start"],
+        "outputCapture": "std"
+      }
+    ]
+  }
