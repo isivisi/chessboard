@@ -4,8 +4,18 @@
 			<b-col> Room Code: </b-col>
 			<b-col> <b-form-input v-model.lazy="roomCode" :placeholder="roomCode"></b-form-input> </b-col>
 		</b-row>
+	
+		<b-row style="height:5%">
+			<b-col> <span class="align-bottom">Opponent</span> </b-col>
+		</b-row>
 
+		<b-row style="height:80%">
 			<board ref="board" :fen="shownFen" @onMove="onMove"></board>
+		</b-row>
+
+		<b-row style="height:5%">
+			<b-col> <span class="align-top">You</span> </b-col>
+		</b-row>
 
 	</div>
 </template>

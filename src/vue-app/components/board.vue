@@ -80,16 +80,20 @@
 			},
 		},
 
+		computed: {
+			history() {
+				return this.game.history();
+			},
+		},
+
 		methods: {
 			// https://github.com/vitogit/vue-chessboard/blob/master/src/components/chessboard/index.vue
 			possibleMoves () {
 				const dests = {}
-				console.log(SQUARES)
 				SQUARES.forEach(s => {
 					const ms = this.game.moves({square: s, verbose: true})
 					if (ms.length) dests[s] = ms.map(m => m.to)
 				})
-				console.log(dests)
 				return dests
 			},
 
@@ -146,7 +150,8 @@
 				this.boardSize.height = smallest + 'px';
 				this.boardSize.width = smallest  + 'px';
 				this.board.redrawAll();
-			}
+			},
+
 		}
 	};
 </script>
