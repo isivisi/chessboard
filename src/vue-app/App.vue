@@ -1,17 +1,13 @@
 <template>
 	<div id="app">
 		<b-row style="grid-area:header; max-height:100px;">
-			<b-col> Room Code: </b-col>
-			<b-col> <b-form-input v-model.lazy="roomCode" :placeholder="roomCode"></b-form-input> </b-col>
+			<b-col> Room <b-badge> {{roomCode}} </b-badge></b-col>
 		</b-row>
 
 		<div style="grid-area:main">
-
-
 			<b-row >
 				<board ref="board" :fen="shownFen" @onMove="onMove"></board>
 			</b-row>
-
 		</div>
 
 		<div style="grid-area:moves; max-width:200px;">
