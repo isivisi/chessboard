@@ -61,8 +61,6 @@
 		methods: {
 
 			onMove(move) {
-				console.log(move);
-
 				this.boardState = move;
 				if (this.dataConnection) this.dataConnection.send(move);
 			},
@@ -82,6 +80,7 @@
 				this.$peer.on('connection', (conn) => {
 					console.log("connection started");
 					this.dataConnection = conn;
+					conn.send(this.boardState); // send room boardstate
 					conn.on('data', (data) => {
 						console.log('recieved change', data);
 						this.boardState = data;

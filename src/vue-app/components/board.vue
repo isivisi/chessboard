@@ -29,7 +29,7 @@
 	import 'chessground/assets/chessground.brown.css';
 	import 'chessground/assets/chessground.cburnett.css';
 
-	import { Chess } from 'chess.js';
+	import { Chess, SQUARES } from 'chess.js';
 
 	const config = {
 		moveable: {
@@ -90,24 +90,30 @@
 		methods: {
 			// https://github.com/vitogit/vue-chessboard/blob/master/src/components/chessboard/index.vue
 			possibleMoves () {
-				return null;
 				const dests = {}
-				this.game.SQUARES.forEach(s => {
+				console.log(SQUARES)
+				SQUARES.forEach(s => {
 					const ms = this.game.moves({square: s, verbose: true})
 					if (ms.length) dests[s] = ms.map(m => m.to)
 				})
+				console.log(dests)
 				return dests
+			},
+
+			toColor () {
+				return (this.game.turn() === 'w') ? 'white' : 'black'
 			},
 
 			onMoved() {
 				return (orig, dest, metadata) => {
 					this.game.move({from: orig, to: dest})
 					this.board.set({
+						...config,
 						fen: this.game.fen(),
-						//turnColor: this.toColor(),
+						turnColor: this.toColor(),
 						movable: {
-							//color: this.toColor(),
-							dests: this.possibleMoves(),
+							color: this.toColor(),
+							//dests: this.possibleMoves(),
 						},
 					})
 
@@ -121,10 +127,11 @@
 				 this.board = Chessground(this.$refs.board, {
 					...config,
 					fen: this.game.fen(),
-					//turnColor: this.toColor(),
+					turnColor: this.toColor(),
 					movable: {
-						//color: this.toColor(),
-						dests: this.possibleMoves(),
+						color: this.toColor(),
+						free: true,
+						//dests: this.possibleMoves(),
 					},
 					orientation: 'white',
 				});
