@@ -31,13 +31,6 @@
 
 	import { Chess, SQUARES } from 'chess.js';
 
-	const config = {
-		moveable: {
-			free: true,
-			color: 'both',
-		}
-	};
-
 	export default {
 		name: "board",
 
@@ -63,7 +56,7 @@
 
 		mounted() {
 
-			this.board = Chessground(this.$refs.board, config);
+			this.board = Chessground(this.$refs.board, {});
 			
 			//this.board.set(config);
 			
@@ -108,7 +101,6 @@
 				return (orig, dest, metadata) => {
 					this.game.move({from: orig, to: dest})
 					this.board.set({
-						...config,
 						fen: this.game.fen(),
 						turnColor: this.toColor(),
 						movable: {
@@ -125,7 +117,6 @@
 			loadPosition() {
 				this.game.load(this.fen);
 				 this.board = Chessground(this.$refs.board, {
-					...config,
 					fen: this.game.fen(),
 					turnColor: this.toColor(),
 					movable: {
