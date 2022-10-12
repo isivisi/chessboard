@@ -25,5 +25,12 @@
         "args" : ["run", "start"],
         "outputCapture": "std"
       }
-    ]
+    ],
+    "compounds": [
+        {
+          "name": "Server/Client",
+          "configurations": ["dev", "start"],
+          "stopAll": true
+        }
+      ]
   }
