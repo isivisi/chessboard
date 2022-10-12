@@ -1,16 +1,17 @@
 <template>
-	<div ref="boardwrapper" class="wrapper">
-		<div ref="board" class="board" :style="boardSize">
+
+		<div ref="board" class="board">
 
 		</div>
-	</div>
+
 </template>
 
 <style>
 
-	.wrapper {
+	.board {
 		width:100%;
 		height: 100%;
+		padding-top:100%; /* 1:1 aspect */
 	}
 
 	.cg-wrap {
@@ -41,11 +42,6 @@
 				game: null,
 				board: null,
 				observer: null,
-
-				boardSize: {
-					width: '100px',
-					height: '100px',
-				}
 			}
 		},
 
@@ -77,12 +73,6 @@
 			 fen: function (newFen) {
 				this.fen = newFen
 				this.loadPosition()
-			},
-		},
-
-		computed: {
-			history() {
-				return this.game.history();
 			},
 		},
 
@@ -142,14 +132,11 @@
 			},
 
 			onResize() {
-				var width = this.$refs.boardwrapper.clientHeight;
-				var height = this.$refs.boardwrapper.clientWidth;
-
-				var smallest = Math.min(width, height);
-
-				this.boardSize.height = smallest + 'px';
-				this.boardSize.width = smallest  + 'px';
 				this.board.redrawAll();
+			},
+
+			history() {
+				return this.game.history();
 			},
 
 		}

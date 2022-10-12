@@ -1,24 +1,39 @@
 <template>
 	<div id="app">
-		<b-row>
+		<b-row style="grid-area:header; max-height:100px;">
 			<b-col> Room Code: </b-col>
 			<b-col> <b-form-input v-model.lazy="roomCode" :placeholder="roomCode"></b-form-input> </b-col>
 		</b-row>
-	
-		<b-row style="height:5%">
-			<b-col> <span class="align-bottom">Opponent</span> </b-col>
-		</b-row>
 
-		<b-row style="height:80%">
-			<board ref="board" :fen="shownFen" @onMove="onMove"></board>
-		</b-row>
+		<div style="grid-area:main">
 
-		<b-row style="height:5%">
-			<b-col> <span class="align-top">You</span> </b-col>
-		</b-row>
+
+			<b-row >
+				<board ref="board" :fen="shownFen" @onMove="onMove"></board>
+			</b-row>
+
+		</div>
+
+		<div style="grid-area:moves; max-width:200px;">
+			{{moves}}
+		</div>
+
+		
 
 	</div>
 </template>
+
+<style>
+
+	#app {
+		display: grid;
+		grid-template:
+		'header header header header header header'
+		'main main main main main moves';
+		gap: 2px;
+	}
+
+</style>
 
 <script>
 /* eslint-disable indent */
@@ -66,6 +81,14 @@
 			});*/
 
 			this.initDataConnection();
+		},
+
+		computed: {
+
+			moves() {
+				return this.$refs.board.history();
+			}
+
 		},
 
 		methods: {
