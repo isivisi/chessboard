@@ -45,7 +45,6 @@
 <script>
 
 	import {Chessground} from 'chessground';
-	//import 'vue-chessboard/dist/vue-chessboard.css';
 
 	import { Chess, SQUARES } from 'chess.js';
 

@@ -22,9 +22,7 @@
 
 <script>
 
-	import {chessboard} from 'vue-chessboard';
 	import {Chessground} from 'chessground';
-	//import 'vue-chessboard/dist/vue-chessboard.css';
 
 	import 'chessground/assets/chessground.base.css';
 	import 'chessground/assets/chessground.brown.css';
@@ -44,6 +42,7 @@
 				game: null,
 				board: null,
 				observer: null,
+				rules: true,
 			}
 		},
 
@@ -57,6 +56,10 @@
 			this.board = Chessground(this.$refs.board, {
 				animation: {
 					enabled: true,
+				},
+				movable: {
+					dests: this.possibleMoves(),
+					showDests: true,
 				}
 			});
 			
@@ -85,12 +88,14 @@
 		methods: {
 			// https://github.com/vitogit/vue-chessboard/blob/master/src/components/chessboard/index.vue
 			possibleMoves () {
-				const dests = {}
+				const dests = {
+					get: function(value) { return this[value]; } // this is some kind of bug
+				}
 				SQUARES.forEach(s => {
 					const ms = this.game.moves({square: s, verbose: true})
 					if (ms.length) dests[s] = ms.map(m => m.to)
 				})
-				return dests
+				return dests;
 			},
 
 			toColor () {
@@ -101,18 +106,24 @@
 				return (orig, dest, metadata) => {
 					var move = this.game.move({from: orig, to: dest})
 
+					if (this.rules) this.board.set({fen: this.game.fen()});
+
+					console.log(this.possibleMoves());
+
 					this.board.set({
-						fen: this.game.fen(),
 						turnColor: this.toColor(),
 						movable: {
-							color: this.toColor(),
-							//dests: this.possibleMoves(),
+							color: this.rules ? this.toColor() : 'both',
+							dests: this.possibleMoves(),
 						},
 					});
 
-					if (!move) return;
+					if (!move && this.rules) return;
 
-					this.$emit('onMove', {history: this.game.history(), fen: this.game.fen()});
+					this.$emit('onMove', {
+						history: this.game.history(), 
+						fen: this.rules ? this.game.fen() : this.board.getFen(),
+					});
 				}
 			},
 
@@ -123,21 +134,34 @@
 					fen: this.game.fen(),
 					turnColor: this.toColor(),
 					movable: {
-						color: this.toColor(),
-						free: true,
-						//dests: this.possibleMoves(),
+						color: this.rules ? this.toColor() : 'both',
+						dests: this.possibleMoves(),
 					},
 					orientation: 'white',
 				});
 
 				this.board.set({
 					movable: { events: { after: this.onMoved() } },
-				})
+				});
 			},
 
 			setState(state) {
-				console.log(state)
-				this.board.set({...state});
+				this.board.set(state);
+			},
+
+			setRulesEnabled(enabled) {
+
+				this.rules = enabled;
+
+				this.board.set({
+					movable: {
+						color: enabled ? this.toColor() : 'both',
+						free: !enabled,
+					}
+				});
+
+				if (enabled) this.game.load(this.board.getFen());
+
 			},
 
 			onResize() {

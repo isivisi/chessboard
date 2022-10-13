@@ -25,16 +25,35 @@
 		<div v-else id="app">
 
 			<div class="boardarea">
-				<b-row >
+				<b-row>
+					<div class="opponent">
+						<b-row>
+							<b-col> Opponent </b-col> <b-col class="align-right text-right"> 0:00 </b-col>
+						</b-row>
+					</div>
 					<board ref="board" :fen="shownFen" @onMove="onMove"></board>
+					<div class="opponent">
+						<b-row>
+							<b-col> You </b-col> <b-col class="align-right text-right"> 0:00 </b-col>
+						</b-row>
+					</div>
 				</b-row>
 			</div>
 
 			<div class="aside" id="aside">
-				<div> 
-					<h3> Room <b-badge> {{roomCode}} </b-badge> </h3>
+				<div>
+					<div> 
+						<h3> Room <b-badge> {{roomCode}} </b-badge> </h3>
+					</div>
+					<movelistview ref="movelist"></movelistview>
 				</div>
-				<movelistview ref="movelist"></movelistview>
+				<div class="settings">
+					settings
+					<b-form>
+						<b-form-checkbox v-model="roomSettings.rules" size="sm" switch> chess rules </b-form-checkbox>
+						<b-form-checkbox v-model="localSettings.sendMouseLoc" size="sm" switch> show mouse </b-form-checkbox>
+					</b-form>
+				</div>
 			</div>
 
 		</div>
@@ -54,15 +73,33 @@
 	.boardarea {
 		grid-area:main;
 		padding: 5px 25px 25px 25px;
-		width: 75vw;
+		/*width: 75vw;*/
+		height:0;
+		padding-bottom:100%;
+		width:100%;
 	}
 
 	.aside {
 		grid-area: moves; 
 		display:flex; 
 		padding-top: 5px;
-		width:25vw; 
+		width:200px; 
 		flex-direction: column;
+		justify-content: space-between;
+	}
+
+	.opponent {
+		height: 25px;
+		width:100%;
+	}
+
+	.you {
+		height: 25px;
+		width:100%;
+	}
+
+	.settings {
+
 	}
 
 </style>
@@ -77,12 +114,19 @@
 
 		data() {
 			return {
+				roomSettings: {
+					rules: true,
+				},
+				localSettings: {
+					sendMouseLoc: false,
+				},
 				startup: true,
 				roomCode: "",
 				dataConnection: null,
 				boardState: null,
 
 				shownFen: "",
+				settingsChangeRecieved: false,
 			}
 		},
 
@@ -93,11 +137,14 @@
 		},
 
 		mounted() {
-
-			this.initDataConnection();
 			
 			document.onmousemove = (e) => {
-				if (this.dataConnection) this.dataConnection.send({mouse:{x:e.clientX / window.innerHeight, y:e.clientY / window.innerWidth}});
+				if (this.dataConnection && this.localSettings.sendMouseLoc) {
+					this.dataConnection.send({mouse:{
+						x:e.clientX / window.innerHeight, 
+						y:e.clientY / window.innerWidth
+					}});
+				}
 			};
 			
 		},
@@ -108,6 +155,20 @@
 				return this.$refs.board ? this.$refs.board.history() : [];
 			}
 
+		},
+
+		watch: {
+			roomSettings: {
+				handler() {
+					if (this.dataConnection && !this.settingsChangeRecieved) this.dataConnection.send({roomSettings: this.roomSettings});
+					this.settingsChangeRecieved = false;
+				},
+				deep: true,
+			},
+
+			'roomSettings.rules': function() {
+				this.$refs.board.setRulesEnabled(this.roomSettings.rules);
+			}
 		},
 
 		methods: {
@@ -150,7 +211,11 @@
 					this.$refs.remotemouse.setConnection(this.dataConnection);
 					// listen to room data
 					conn.on('data', this.onData);
-					conn.on('open', () => { this.dataConnection.send({boardState:this.boardState, boardStates:this.$refs.movelist.boardStates}); });
+					conn.on('open', () => { this.dataConnection.send({
+						boardState:this.boardState, 
+						boardStates:this.$refs.movelist.boardStates,
+						roomSettings: this.roomSettings,
+					}); });
 				});
 			},
 
@@ -163,6 +228,10 @@
 				}
 				if (data.boardStates) {
 					this.$refs.movelist.setBoardStates(data.boardStates);
+				}
+				if (data.roomSettings) {
+					this.roomSettings = data.roomSettings;
+					this.settingsChangeRecieved = true;
 				}
 			}
 		}

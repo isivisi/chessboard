@@ -10,7 +10,7 @@ const { name: PACKAGE_NAME } = require(resolve(__dirname, "./package.json"));
 module.exports = {
 	entry: resolve(__dirname, "./src/vue-app/main.js"),
 	mode: process.env.NODE_ENV,
-	devtool: 'source-map',
+	devtool: 'eval-source-map',
 	output: {
 		filename: "javascript/[name].[hash:8].js",
 		chunkFilename: "javascript/[id].[chunkhash:8].js",
