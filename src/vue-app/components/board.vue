@@ -43,6 +43,7 @@
 				board: null,
 				observer: null,
 				rules: true,
+				history: [],
 			}
 		},
 
@@ -108,8 +109,6 @@
 
 					if (this.rules) this.board.set({fen: this.game.fen()});
 
-					console.log(this.possibleMoves());
-
 					this.board.set({
 						turnColor: this.toColor(),
 						movable: {
@@ -120,8 +119,10 @@
 
 					if (!move && this.rules) return;
 
+					this.history.push(dest);
+
 					this.$emit('onMove', {
-						history: this.game.history(), 
+						history: this.history, 
 						fen: this.rules ? this.game.fen() : this.board.getFen(),
 					});
 				}
@@ -166,10 +167,6 @@
 
 			onResize() {
 				this.board.redrawAll();
-			},
-
-			history() {
-				return this.game.history();
 			},
 
 		}

@@ -3,12 +3,15 @@
 		<div>
 			moves:
 			<div class="movelistview" ref="list" bg-variant="dark" text-variant="white">
-					<span v-for="(move, i) in boardStates" v-bind:key="i">
-						<b-badge size="sm" @click="moveSelected(move)" class="movebadge" :variant=" i % 2 ? '' : 'light'">
-							{{move.history[move.history.length -1]}}
-						</b-badge>
-						<b-icon-arrow-right-short v-if="i != boardStates.length-1" style="margin-left:-10px"></b-icon-arrow-right-short>
-					</span>
+
+					<template v-if="boardStates[boardStates.length-1]">
+						<span v-for="(move, i) in boardStates[boardStates.length-1].history" v-bind:key="i">
+							<b-badge size="sm" @click="moveSelected(move)" class="movebadge" :variant=" i % 2 ? '' : 'light'">
+								{{move}}
+							</b-badge>
+							<b-icon-arrow-right-short v-if="i != boardStates.length-1" style="margin-left:-10px"></b-icon-arrow-right-short>
+						</span>
+					</template>
 			</div>
 			<div class="controls">
 				<b-button-group size="sm">

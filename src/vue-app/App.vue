@@ -152,7 +152,7 @@
 		computed: {
 
 			moves() {
-				return this.$refs.board ? this.$refs.board.history() : [];
+				return this.$refs.board ? this.$refs.board.history : [];
 			}
 
 		},
