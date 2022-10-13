@@ -47,6 +47,7 @@
 					//console.log(data)
 
 					if (data.mouse) {
+						// this only works because the aspect ratio is locked
 						this.mouselocation.left = (data.mouse.x * window.innerHeight) + 'px';
 						this.mouselocation.top = (data.mouse.y * window.innerWidth) + 'px';
 
