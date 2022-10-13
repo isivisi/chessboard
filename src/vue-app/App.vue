@@ -150,35 +150,30 @@
 
 				if (this.$refs.remotemouse) this.$refs.remotemouse.setConnection(this.dataConnection);
 
-				this.dataConnection.on('data', (data) => {
-					if (!data.mouse) console.log(data);
-					if (data.boardState) { 
-						this.boardState = data.boardState;
-						this.shownFen = data.boardState.fen;
-						this.$refs.movelist.addState(data.boardState);
-					}
-					if (data.boardStates) {
-						this.$refs.movelist.setBoardStates(data.boardStates);
-					}
-				});
+				this.dataConnection.on('data', this.onData);
 
 				// You joining someone
 				this.$peer.on('connection', (conn) => {
 					console.log("connection started");
 					this.dataConnection = conn;
 					this.$refs.remotemouse.setConnection(this.dataConnection);
-					conn.on('data', (data) => {
-						if (!data.mouse) console.log(data);
-						if (data.boardState) { 
-							this.boardState = data.boardState;
-							this.shownFen = data.boardState.fen;
-							this.$refs.movelist.addState(data.boardState);
-						}
-					});
+					conn.on('data', this.onData);
 
 					this.$nextTick(() => { this.dataConnection.send({boardState:this.boardState, boardStates:this.$refs.movelist.boardStates}); });
 				})
 			},
+
+			onData(data) {
+				if (!data.mouse) console.log(data);
+				if (data.boardState) { 
+					this.boardState = data.boardState;
+					this.shownFen = data.boardState.fen;
+					this.$refs.movelist.addState(data.boardState);
+				}
+				if (data.boardStates) {
+					this.$refs.movelist.setBoardStates(data.boardStates);
+				}
+			}
 		}
 	};
 </script>
