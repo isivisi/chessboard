@@ -45,8 +45,8 @@
 					//console.log(data)
 
 					if (data.mouse) {
-						this.mouselocation.left = (data.mouse.x * window.innerWidth) + 'px';
-						this.mouselocation.top = (data.mouse.y * window.innerHeight) + 'px';
+						this.mouselocation.left = (data.mouse.x * window.innerHeight) + 'px';
+						this.mouselocation.top = (data.mouse.y * window.innerWidth) + 'px';
 
 						clearTimeout(this.showTimeout);
 						this.show = true;

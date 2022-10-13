@@ -97,15 +97,15 @@
 			this.initDataConnection();
 			
 			document.onmousemove = (e) => {
-				if (this.dataConnection) this.dataConnection.send({mouse:{x:e.clientX / window.innerWidth, y:e.clientY / window.innerHeight}});
+				if (this.dataConnection) this.dataConnection.send({mouse:{x:e.clientX / window.innerHeight, y:e.clientY / window.innerWidth}});
 			};
 
-			window.addEventListener('resize', this.onResize);
+			//window.addEventListener('resize', this.onResize);
 			
 		},
 
 		unmounted() {
-			window.removeEventListener('resize', this.onResize);
+			//window.removeEventListener('resize', this.onResize);
 		},
 
 		computed: {
