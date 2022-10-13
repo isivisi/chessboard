@@ -16,6 +16,7 @@ const createWindow = () => {
 		icon: resolve(__dirname, "./assets/icon.png"),
 		webPreferences: {
 			nodeIntegration: true,
+			contextIsolation: false,
 		}
 	});
 

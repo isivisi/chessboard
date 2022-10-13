@@ -73,7 +73,7 @@
 		"cross-env": "^7.0.2",
 		"css-loader": "^4.3.0",
 		"devtron": "^1.4.0",
-		"electron": "^10.1.2",
+		"electron": "^21.1",
 		"electron-builder": "^22.8.1",
 		"eslint": "",
 		"eslint-loader": "^4.0.2",
