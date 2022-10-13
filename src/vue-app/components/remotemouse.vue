@@ -10,6 +10,7 @@
 	.remotemouse {
 		position: absolute !important;
 		z-index: 9999;
+		transition: opacity 1s;
 	}
 </style>
 
@@ -22,7 +23,8 @@
 			return {
 				mouselocation: {
 					top: 0,
-					left: 0
+					left: 0,
+					opacity: 1,
 				},
 
 				show:false,
@@ -50,7 +52,8 @@
 
 						clearTimeout(this.showTimeout);
 						this.show = true;
-						this.showTimeout = setTimeout(() => this.show = false, 1000);
+						this.mouselocation.opacity = 1;
+						this.showTimeout = setTimeout(() => this.mouselocation.opacity = 0.1, 1000);
 					}
 
 				});
