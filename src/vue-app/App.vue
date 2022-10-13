@@ -125,7 +125,15 @@
 
 			joinRoom() {
 				this.startup = false;
-				this.$nextTick(() => { this.initDataConnection(); });
+
+				console.log("connecting to room", this.roomCode);
+
+				this.dataConnection = this.$peer.connect(this.roomCode);
+
+				if (this.$refs.remotemouse) this.$refs.remotemouse.setConnection(this.dataConnection);
+
+				// listen to room data
+				this.dataConnection.on('data', this.onData);
 			},
 
 			newRoom() {
@@ -144,23 +152,18 @@
 			},
 
 			initDataConnection() {
-				console.log("connecting to room", this.roomCode);
+				console.log("initializing connection logic", this.$peer.id);
 
-				this.dataConnection = this.$peer.connect(this.roomCode);
-
-				if (this.$refs.remotemouse) this.$refs.remotemouse.setConnection(this.dataConnection);
-
-				this.dataConnection.on('data', this.onData);
-
-				// You joining someone
+				// Listen for connections
 				this.$peer.on('connection', (conn) => {
-					console.log("connection started");
+					console.log("someone has joined the room");
 					this.dataConnection = conn;
 					this.$refs.remotemouse.setConnection(this.dataConnection);
+					// listen to room data
 					conn.on('data', this.onData);
-
+					
 					this.$nextTick(() => { this.dataConnection.send({boardState:this.boardState, boardStates:this.$refs.movelist.boardStates}); });
-				})
+				});
 			},
 
 			onData(data) {
