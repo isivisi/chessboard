@@ -1,18 +1,18 @@
 <template>
 
 		<div>
-			<b-card class="movelistview" bg-variant="dark" text-variant="white" header="movelist">
-					<b-badge @click="moveSelected(move)" class="movebadge" v-for="(move, i) in boardStates" v-bind:key="item" :variant=" i % 2 ? '' : 'light'">
+			<h5> moves: </h5>
+			<div class="movelistview" bg-variant="dark" text-variant="white">
+					<b-badge @click="moveSelected(move)" class="movebadge" v-for="(move, i) in boardStates" v-bind:key="i" :variant=" i % 2 ? '' : 'light'">
 						{{i % 2 ? '' : Math.ceil((i+0.5)/2) + ':'}} {{move.history[move.history.length -1]}}
 					</b-badge>
-			</b-card>
+			</div>
 		</div>
 
 </template>
 
 <style>
 	.movelistview {
-		margin-left: 15px;
 		width: 100%;
 	}
 

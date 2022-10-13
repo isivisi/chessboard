@@ -1,6 +1,6 @@
 {
 	"name": "chessboard",
-	"version": "0.1",
+	"version": "0.1.0",
 	"description": "Simple multiplayer chessboard",
 	"main": "dist/electron-app/main.js",
 	"scripts": {

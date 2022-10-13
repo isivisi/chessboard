@@ -1,21 +1,46 @@
 <template>
-	<div id="app">
-		<b-row style="grid-area:header; max-height:100px;">
-			<b-col> Room <b-badge> {{roomCode}} </b-badge></b-col>
-		</b-row>
+	<div>
 
-		<div style="grid-area:main">
-			<b-row >
-				<board ref="board" :fen="shownFen" @onMove="onMove"></board>
-			</b-row>
+		<div v-if="startup">
+
+			<b-jumbotron bg-variant="dark">
+
+				<template #header>chessboard</template>
+
+				<template #lead>
+					Free online chessboard
+				</template>
+
+				<div>
+					<b-form inline onsubmit="return false">
+						<b-form-input @keyup.enter="joinRoom"  v-model="roomCode" placeholder="Join with room ID" size="lg"></b-form-input> 
+						<div style="padding:10px;"> or </div>
+						<b-button @click="newRoom" variant="primary" size="lg">Create a new Room</b-button>
+					</b-form>
+				</div>
+
+			</b-jumbotron>
+
 		</div>
+		<div v-else id="app">
 
-		<div style="grid-area:moves; display:flex; max-width:200px;">
-			<movelistview ref="movelist"></movelistview>
+			<div class="boardarea">
+				<b-row >
+					<board ref="board" :fen="shownFen" @onMove="onMove"></board>
+				</b-row>
+			</div>
+
+			<div class="aside">
+				<div> 
+					<h3> Room <b-badge> {{roomCode}} </b-badge> </h3>
+				</div>
+				<movelistview ref="movelist"></movelistview>
+			</div>
+
+			
+			<remotemouse ref="remotemouse"></remotemouse>
+
 		</div>
-
-		
-
 	</div>
 </template>
 
@@ -23,10 +48,22 @@
 
 	#app {
 		display: grid;
-		grid-template:
-		'header header header header header header'
-		'main main main main main moves';
+		grid-template: 'main main main main main moves';
 		gap: 2px;
+	}
+
+	.boardarea {
+		grid-area:main;
+		padding: 5px 25px 25px 25px;
+		width: 75vw;
+	}
+
+	.aside {
+		grid-area: moves; 
+		display:flex; 
+		padding-top: 5px;
+		width:25vw; 
+		flex-direction: column;
 	}
 
 </style>
@@ -41,6 +78,7 @@
 
 		data() {
 			return {
+				startup: true,
 				roomCode: "",
 				dataConnection: null,
 				boardState: null,
@@ -51,33 +89,18 @@
 
 		components: {
 			board: () => import("@/components/board.vue"),
-			movelistview: () => import("@/components/movelistview.vue")
-		},
-
-		watch: {
-			roomCode: function (code) {
-				this.initDataConnection();
-			}
+			movelistview: () => import("@/components/movelistview.vue"),
+			remotemouse: () => import("@/components/remotemouse.vue"),
 		},
 
 		mounted() {
-			
-			this.roomCode = this.$peer.id;
-
-			// On someone joined you
-			/*this.$peer.on('connection', (conn) => { 
-				console.log('someone has joined your room');
-				this.dataConnection = conn;
-				conn.send(this.boardState); // send room boardstate
-
-				conn.on('data', (data) => {
-					console.log('recieved change from host', data);
-					this.boardState = data;
-					this.shownFen = data.fen;
-				});
-			});*/
 
 			this.initDataConnection();
+			
+			document.onmousemove = (e) => {
+				if (this.dataConnection) this.dataConnection.send({mouse:{x:e.clientX, y:e.clientY}});
+			};
+			
 		},
 
 		computed: {
@@ -90,10 +113,24 @@
 
 		methods: {
 
+			joinRoom() {
+				this.startup = false;
+				this.$nextTick(() => { this.initDataConnection(); });
+			},
+
+			newRoom() {
+				this.startup = false;
+				this.roomCode = this.$peer.id;
+				this.$nextTick(() => { this.initDataConnection(); });
+			},
+
 			onMove(move) {
 				this.boardState = move;
 				this.$refs.movelist.addState(move);
-				if (this.dataConnection) this.dataConnection.send(move);
+				if (this.dataConnection) {
+					console.log('sending state');
+					this.dataConnection.send({boardState:move});
+				}
 			},
 
 			initDataConnection() {
@@ -101,21 +138,28 @@
 
 				this.dataConnection = this.$peer.connect(this.roomCode);
 
+				if (this.$refs.remotemouse) this.$refs.remotemouse.setConnection(this.dataConnection);
+
 				this.dataConnection.on('data', (data) => {
-					console.log('recieved change', data);
-					this.boardState = data;
-					this.shownFen = data.fen;
+					if (data.boardState) { 
+						this.boardState = data.boardState;
+						this.shownFen = data.boardState.fen;
+						this.$refs.movelist.addState(data.boardState);
+					}
 				});
 
 				// You joining someone
 				this.$peer.on('connection', (conn) => {
 					console.log("connection started");
 					this.dataConnection = conn;
-					conn.send(this.boardState); // send room boardstate
+					this.$refs.remotemouse.setConnection(this.dataConnection);
+					conn.send({boardState:this.boardState}); // send room boardstate
 					conn.on('data', (data) => {
-						console.log('recieved change', data);
-						this.boardState = data;
-						this.shownFen = data.fen;
+						if (data.boardState) { 
+							this.boardState = data.boardState;
+							this.shownFen = data.boardState.fen;
+							this.$refs.movelist.addState(data.boardState);
+						}
 					});
 				})
 			},

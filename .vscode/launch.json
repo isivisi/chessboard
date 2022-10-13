@@ -24,6 +24,18 @@
         },
         "args" : ["run", "start"],
         "outputCapture": "std"
+      },
+      {
+        "name": "second instance",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}",
+        "runtimeExecutable": "npm",
+        "windows": {
+          "runtimeExecutable": "npm"
+        },
+        "args" : ["run", "start"],
+        "outputCapture": "std"
       }
     ],
     "compounds": [
