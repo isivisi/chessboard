@@ -8,7 +8,7 @@
 				<template #header>chessboard</template>
 
 				<template #lead>
-					Free online chessboard
+					its chess
 				</template>
 
 				<div>
@@ -99,13 +99,7 @@
 			document.onmousemove = (e) => {
 				if (this.dataConnection) this.dataConnection.send({mouse:{x:e.clientX / window.innerHeight, y:e.clientY / window.innerWidth}});
 			};
-
-			//window.addEventListener('resize', this.onResize);
 			
-		},
-
-		unmounted() {
-			//window.removeEventListener('resize', this.onResize);
 		},
 
 		computed: {
@@ -117,11 +111,6 @@
 		},
 
 		methods: {
-
-			onResize() {
-				var aside = document.getElementById('html');
-				aside.style.zoom = window.innerWidth / 1000;
-			},
 
 			joinRoom() {
 				this.startup = false;
@@ -161,8 +150,7 @@
 					this.$refs.remotemouse.setConnection(this.dataConnection);
 					// listen to room data
 					conn.on('data', this.onData);
-					
-					this.$nextTick(() => { this.dataConnection.send({boardState:this.boardState, boardStates:this.$refs.movelist.boardStates}); });
+					conn.on('open', () => { this.dataConnection.send({boardState:this.boardState, boardStates:this.$refs.movelist.boardStates}); });
 				});
 			},
 
