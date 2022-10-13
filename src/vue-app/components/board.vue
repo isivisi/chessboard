@@ -54,7 +54,11 @@
 
 		mounted() {
 
-			this.board = Chessground(this.$refs.board, {});
+			this.board = Chessground(this.$refs.board, {
+				animation: {
+					enabled: true,
+				}
+			});
 			
 			//this.board.set(config);
 			
@@ -95,7 +99,8 @@
 
 			onMoved() {
 				return (orig, dest, metadata) => {
-					this.game.move({from: orig, to: dest})
+					var move = this.game.move({from: orig, to: dest})
+
 					this.board.set({
 						fen: this.game.fen(),
 						turnColor: this.toColor(),
@@ -103,7 +108,9 @@
 							color: this.toColor(),
 							//dests: this.possibleMoves(),
 						},
-					})
+					});
+
+					if (!move) return;
 
 					this.$emit('onMove', {history: this.game.history(), fen: this.game.fen()});
 				}
@@ -112,7 +119,7 @@
 			// load positional data for both Chess.js and Chessground
 			loadPosition() {
 				this.game.load(this.fen);
-				 this.board = Chessground(this.$refs.board, {
+				 this.board.set({
 					fen: this.game.fen(),
 					turnColor: this.toColor(),
 					movable: {
