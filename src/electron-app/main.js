@@ -8,6 +8,7 @@ const { format } = require("url");
 app.commandLine.appendSwitch('no-sandbox');
 
 const createWindow = () => {
+
 	// Create the browser window.
 	const mainWindow = new BrowserWindow({
 		width: 800,

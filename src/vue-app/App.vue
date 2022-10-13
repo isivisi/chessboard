@@ -30,17 +30,16 @@
 				</b-row>
 			</div>
 
-			<div class="aside">
+			<div class="aside" id="aside">
 				<div> 
 					<h3> Room <b-badge> {{roomCode}} </b-badge> </h3>
 				</div>
 				<movelistview ref="movelist"></movelistview>
 			</div>
 
-			
-			<remotemouse ref="remotemouse"></remotemouse>
-
 		</div>
+
+		<remotemouse ref="remotemouse"></remotemouse>
 	</div>
 </template>
 
@@ -98,9 +97,15 @@
 			this.initDataConnection();
 			
 			document.onmousemove = (e) => {
-				if (this.dataConnection) this.dataConnection.send({mouse:{x:e.clientX, y:e.clientY}});
+				if (this.dataConnection) this.dataConnection.send({mouse:{x:e.clientX / window.innerWidth, y:e.clientY / window.innerHeight}});
 			};
+
+			window.addEventListener('resize', this.onResize);
 			
+		},
+
+		unmounted() {
+			window.removeEventListener('resize', this.onResize);
 		},
 
 		computed: {
@@ -112,6 +117,11 @@
 		},
 
 		methods: {
+
+			onResize() {
+				var aside = document.getElementById('html');
+				aside.style.zoom = window.innerWidth / 1000;
+			},
 
 			joinRoom() {
 				this.startup = false;
@@ -141,10 +151,14 @@
 				if (this.$refs.remotemouse) this.$refs.remotemouse.setConnection(this.dataConnection);
 
 				this.dataConnection.on('data', (data) => {
+					if (!data.mouse) console.log(data);
 					if (data.boardState) { 
 						this.boardState = data.boardState;
 						this.shownFen = data.boardState.fen;
 						this.$refs.movelist.addState(data.boardState);
+					}
+					if (data.boardStates) {
+						this.$refs.movelist.setBoardStates(data.boardStates);
 					}
 				});
 
@@ -153,14 +167,16 @@
 					console.log("connection started");
 					this.dataConnection = conn;
 					this.$refs.remotemouse.setConnection(this.dataConnection);
-					conn.send({boardState:this.boardState}); // send room boardstate
 					conn.on('data', (data) => {
+						if (!data.mouse) console.log(data);
 						if (data.boardState) { 
 							this.boardState = data.boardState;
 							this.shownFen = data.boardState.fen;
 							this.$refs.movelist.addState(data.boardState);
 						}
 					});
+
+					this.$nextTick(() => { this.dataConnection.send({boardState:this.boardState, boardStates:this.$refs.movelist.boardStates}); });
 				})
 			},
 		}
