@@ -5,6 +5,8 @@ const { app, BrowserWindow } = require("electron");
 const { resolve } = require("path");
 const { format } = require("url");
 
+const isDev = process.env.NODE_ENV === "development";
+
 app.commandLine.appendSwitch('no-sandbox');
 
 // setup chessboard://{roomCode} deeplink
