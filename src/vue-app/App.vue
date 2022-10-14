@@ -53,11 +53,11 @@
 
 					<div class="controls">
 						<b-button-group size="sm">
-							<b-button variant="dark"> <b-icon-skip-backward-fill font-scale="2" variant="light"></b-icon-skip-backward-fill> </b-button>
-							<b-button variant="dark"> <b-icon-play-fill rotate="180" font-scale="2" variant="light"></b-icon-play-fill> </b-button>
+							<b-button @click="moveToStart()" variant="dark"> <b-icon-skip-backward-fill font-scale="2" variant="light"></b-icon-skip-backward-fill> </b-button>
+							<b-button @click="moveBackwards()" variant="dark"> <b-icon-play-fill rotate="180" font-scale="2" variant="light"></b-icon-play-fill> </b-button>
 							<b-button @click="flipBoard()" variant="dark"> <b-icon-arrow-down-up font-scale="2" variant="light"></b-icon-arrow-down-up> </b-button>
 							<b-button @click="moveForward()" variant="dark"> <b-icon-play-fill font-scale="2" variant="light"></b-icon-play-fill> </b-button>
-							<b-button variant="dark"> <b-icon-skip-forward-fill font-scale="2" variant="light"></b-icon-skip-forward-fill > </b-button>
+							<b-button @click="moveToNow()" variant="dark"> <b-icon-skip-forward-fill font-scale="2" variant="light"></b-icon-skip-forward-fill > </b-button>
 						</b-button-group>
 					</div>
 
@@ -200,8 +200,20 @@
 
 			},
 
+			moveToNow() {
+
+			},
+
+			moveToStart() {
+
+			},
+
+			moveBackwards() {
+
+			},
+
 			moveForward() {
-				console.log(this.$refs.board.board.state.drawable.shapes);
+				
 			},
 
 			joinRoom() {
@@ -211,10 +223,13 @@
 
 				this.dataConnection = this.$peer.connect(this.roomCode);
 
-				if (this.$refs.remotemouse) this.$refs.remotemouse.setConnection(this.dataConnection);
-
 				// listen to room data
 				this.dataConnection.on('data', this.onData);
+
+				// on connection opened
+				this.dataConnection.on('open', () => {
+					// TODO
+				});
 			},
 
 			newRoom() {
@@ -248,7 +263,6 @@
 				this.$peer.on('connection', (conn) => {
 					console.log("someone has joined the room");
 					this.dataConnection = conn;
-					this.$refs.remotemouse.setConnection(this.dataConnection);
 					// listen to room data
 					conn.on('data', this.onData);
 					conn.on('open', () => { this.dataConnection.send({
@@ -276,6 +290,14 @@
 				if (data.shapes) {
 					this.$refs.board.updateShapes(data.shapes);
 					this.settingsChangeRecieved = true;
+				}
+				if (data.mouse) {
+					var position = {};
+					// this only works because the aspect ratio is locked
+					var board = document.getElementById('board');
+					position.x = (this.localSettings.orientation  === 'white' ? (data.mouse.x * board.clientHeight) : board.clientHeight - (data.mouse.x * board.clientHeight)) + 'px';
+					position.y = (this.localSettings.orientation  === 'white' ? (data.mouse.y * board.clientHeight) : board.clientWidth - (data.mouse.y * board.clientHeight)) + 'px';
+					this.$refs.remotemouse.setMousePos(position);
 				}
 			}
 		}

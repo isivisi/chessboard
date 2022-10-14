@@ -28,7 +28,7 @@
 				mouselocation: {
 					top: 0,
 					left: 0,
-					opacity: 1,
+					opacity: 0,
 				},
 
 				showTimeout: null,
@@ -43,24 +43,13 @@
 
 		methods: {
 
-			setConnection(connection) {
-				console.log("setting mouse connection");
-				connection.on('data', (data) => {
+			setMousePos(position) {
+				this.mouselocation.left = position.x;
+				this.mouselocation.top = position.y;
 
-					//console.log(data)
-
-					if (data.mouse) {
-						// this only works because the aspect ratio is locked
-						var board = document.getElementById('board');
-						this.mouselocation.left = (this.board.orientation  === 'white' ? (data.mouse.x * board.clientHeight) : board.clientHeight - (data.mouse.x * board.clientHeight)) + 'px';
-						this.mouselocation.top = (this.board.orientation  === 'white' ? (data.mouse.y * board.clientHeight) : board.clientWidth - (data.mouse.y * board.clientHeight)) + 'px';
-
-						clearTimeout(this.showTimeout);
-						this.mouselocation.opacity = 1;
-						this.showTimeout = setTimeout(() => this.mouselocation.opacity = 0, 1000);
-					}
-
-				});
+				clearTimeout(this.showTimeout);
+				this.mouselocation.opacity = 1;
+				this.showTimeout = setTimeout(() => this.mouselocation.opacity = 0, 1000);
 			}
 
 		}
