@@ -1,7 +1,7 @@
 <template>
 
 		<div>
-			<b-icon-mouse-fill v-show="show" class="remotemouse" :style="mouselocation" variant="info" scale="2"></b-icon-mouse-fill>
+			<b-icon-mouse-fill class="remotemouse" :style="mouselocation" variant="info" scale="2"></b-icon-mouse-fill>
 		</div>
 
 </template>
@@ -19,6 +19,10 @@
 	export default {
 		name: "remotemouse",
 
+		props: [
+			'board',
+		],
+
 		data() {
 			return {
 				mouselocation: {
@@ -27,7 +31,6 @@
 					opacity: 1,
 				},
 
-				show:false,
 				showTimeout: null,
 			}
 		},
@@ -48,13 +51,13 @@
 
 					if (data.mouse) {
 						// this only works because the aspect ratio is locked
-						this.mouselocation.left = (data.mouse.x * window.innerHeight) + 'px';
-						this.mouselocation.top = (data.mouse.y * window.innerWidth) + 'px';
+						var board = document.getElementById('board');
+						this.mouselocation.left = (this.board.orientation  === 'white' ? (data.mouse.x * board.clientHeight) : board.clientHeight - (data.mouse.x * board.clientHeight)) + 'px';
+						this.mouselocation.top = (this.board.orientation  === 'white' ? (data.mouse.y * board.clientHeight) : board.clientWidth - (data.mouse.y * board.clientHeight)) + 'px';
 
 						clearTimeout(this.showTimeout);
-						this.show = true;
 						this.mouselocation.opacity = 1;
-						this.showTimeout = setTimeout(() => this.mouselocation.opacity = 0.1, 1000);
+						this.showTimeout = setTimeout(() => this.mouselocation.opacity = 0, 1000);
 					}
 
 				});

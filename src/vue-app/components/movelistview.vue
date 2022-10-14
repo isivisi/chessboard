@@ -13,12 +13,6 @@
 						</span>
 					</template>
 			</div>
-			<div class="controls">
-				<b-button-group size="sm">
-					<b-button variant="dark"> <b-icon-skip-backward-fill variant="secondary"></b-icon-skip-backward-fill> </b-button>
-					<b-button variant="dark"> <b-icon-skip-forward-fill variant="secondary"></b-icon-skip-forward-fill> </b-button>
-				</b-button-group>
-			</div>
 		</div>
 
 </template>

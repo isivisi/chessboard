@@ -1,5 +1,12 @@
 {
     "version": "0.2.0",
+    "compounds": [
+      {
+        "name": "Server/Client",
+        "configurations": ["dev", "start"],
+        "stopAll": true
+      }
+    ],
     "configurations": [
       {
         "name": "dev",
@@ -38,11 +45,4 @@
         "outputCapture": "std"
       }
     ],
-    "compounds": [
-        {
-          "name": "Server/Client",
-          "configurations": ["dev", "start"],
-          "stopAll": true
-        }
-      ]
   }

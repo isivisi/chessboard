@@ -31,7 +31,11 @@
 							<b-col> Opponent </b-col> <b-col class="align-right text-right"> 0:00 </b-col>
 						</b-row>
 					</div>
+
 					<board ref="board" :fen="shownFen" @onMove="onMove"></board>
+					
+					<remotemouse ref="remotemouse" :board="$refs.board"></remotemouse>
+
 					<div class="opponent">
 						<b-row>
 							<b-col> You </b-col> <b-col class="align-right text-right"> 0:00 </b-col>
@@ -42,23 +46,37 @@
 
 			<div class="aside" id="aside">
 				<div>
+
 					<div> 
 						<h3> Room <b-badge> {{roomCode}} </b-badge> </h3>
 					</div>
+
+					<div class="controls">
+						<b-button-group size="sm">
+							<b-button variant="dark"> <b-icon-skip-backward-fill font-scale="2" variant="light"></b-icon-skip-backward-fill> </b-button>
+							<b-button variant="dark"> <b-icon-play-fill rotate="180" font-scale="2" variant="light"></b-icon-play-fill> </b-button>
+							<b-button @click="flipBoard()" variant="dark"> <b-icon-arrow-down-up font-scale="2" variant="light"></b-icon-arrow-down-up> </b-button>
+							<b-button variant="dark"> <b-icon-play-fill font-scale="2" variant="light"></b-icon-play-fill> </b-button>
+							<b-button variant="dark"> <b-icon-skip-forward-fill font-scale="2" variant="light"></b-icon-skip-forward-fill > </b-button>
+						</b-button-group>
+					</div>
+
 					<movelistview ref="movelist"></movelistview>
+
 				</div>
 				<div class="settings">
+
 					settings
 					<b-form>
 						<b-form-checkbox v-model="roomSettings.rules" size="sm" switch> chess rules </b-form-checkbox>
 						<b-form-checkbox v-model="localSettings.sendMouseLoc" size="sm" switch> show mouse </b-form-checkbox>
 					</b-form>
+					
 				</div>
 			</div>
 
 		</div>
 
-		<remotemouse ref="remotemouse"></remotemouse>
 	</div>
 </template>
 
@@ -72,6 +90,7 @@
 
 	.boardarea {
 		grid-area:main;
+		position: relative;
 		padding: 5px 25px 25px 25px;
 		/*width: 75vw;*/
 		height:0;
@@ -98,9 +117,6 @@
 		width:100%;
 	}
 
-	.settings {
-
-	}
 
 </style>
 
@@ -119,6 +135,7 @@
 				},
 				localSettings: {
 					sendMouseLoc: false,
+					orientation: 'white',
 				},
 				startup: true,
 				roomCode: "",
@@ -140,9 +157,10 @@
 			
 			document.onmousemove = (e) => {
 				if (this.dataConnection && this.localSettings.sendMouseLoc) {
+					var board = document.getElementById('board');
 					this.dataConnection.send({mouse:{
-						x:e.clientX / window.innerHeight, 
-						y:e.clientY / window.innerWidth
+						x: this.localSettings.orientation === 'white' ? e.offsetX / board.clientHeight :  (board.clientHeight - e.offsetX) / board.clientHeight, 
+						y: this.localSettings.orientation === 'white' ? e.offsetY / board.clientHeight : (board.clientWidth - e.offsetY) / board.clientHeight
 					}});
 				}
 			};
@@ -172,6 +190,13 @@
 		},
 
 		methods: {
+
+			flipBoard() {
+				
+				this.localSettings.orientation = this.localSettings.orientation === 'white' ? 'black' : 'white';
+				this.$refs.board.orientation = this.localSettings.orientation;
+
+			},
 
 			joinRoom() {
 				this.startup = false;

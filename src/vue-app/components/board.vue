@@ -1,6 +1,6 @@
 <template>
 
-		<div ref="board" class="board">
+		<div ref="board" id="board" class="board">
 
 		</div>
 
@@ -44,6 +44,7 @@
 				observer: null,
 				rules: true,
 				history: [],
+				orientation: 'white',
 			}
 		},
 
@@ -84,6 +85,10 @@
 				this.fen = newFen
 				this.loadPosition()
 			},
+
+			orientation: function(newOrientation) {
+				 this.board.set({ orientation: newOrientation });
+			}
 		},
 
 		methods: {
@@ -138,7 +143,7 @@
 						color: this.rules ? this.toColor() : 'both',
 						dests: this.possibleMoves(),
 					},
-					orientation: 'white',
+					orientation: this.orientation,
 				});
 
 				this.board.set({
