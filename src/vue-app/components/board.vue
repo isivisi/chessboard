@@ -72,7 +72,7 @@
 
 			this.onResize();
 
-			this.loadPosition();
+			this.loadPosition("");
 
 		},
 
@@ -83,7 +83,7 @@
 		watch: {
 			 fen: function (newFen) {
 				this.fen = newFen
-				this.loadPosition()
+				this.loadPosition(this.fen)
 			},
 
 			orientation: function(newOrientation) {
@@ -137,7 +137,7 @@
 
 					this.$emit('onMove', {
 						history: this.history,
-						fen: this.rules ? this.game.fen() : this.board.getFen(),
+						fen: this.rules ? this.game.fen() : this.getBoardFen(),
 						game: {
 							gameOver: this.game.isGameOver(),
 							inCheck: this.game.isCheck(),
@@ -150,8 +150,8 @@
 			},
 
 			// load positional data for both Chess.js and Chessground
-			loadPosition() {
-				this.game.load(this.fen);
+			loadPosition(fen) {
+				this.game.load(fen);
 				 this.board.set({
 					fen: this.game.fen(),
 					turnColor: this.toColor(),
@@ -171,10 +171,13 @@
 				this.board.set(state);
 			},
 
+			// Fen from board state alone, not from chess.js
+			getBoardFen() {
+				return this.board.getFen() + ` ${this.game.turn()} KQkq - 0 1`;
+			},
+
 			setRulesEnabled(enabled) {
-
-				var gameFen = this.board.getFen() + ` ${this.game.turn()} KQkq - 0 1`;
-
+				var gameFen = this.getBoardFen();
 				var validFen = validateFen(gameFen);
 				
 				if (!validFen.valid) {
@@ -191,7 +194,8 @@
 					}
 				});
 
-				if (enabled) this.game = new Chess(gameFen);
+				// let chess.js know of changes and recalculate possible moves
+				if (enabled) this.loadPosition(gameFen);
 
 			},
 
