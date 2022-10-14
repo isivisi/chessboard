@@ -32,7 +32,7 @@
 						</b-row>
 					</div>
 
-					<board ref="board" :fen="shownFen" @onMove="onMove"></board>
+					<board ref="board" :fen="shownFen" @onMove="onMove" @onDraw="onBoardDraw"></board>
 					
 					<remotemouse ref="remotemouse" :board="$refs.board"></remotemouse>
 
@@ -56,7 +56,7 @@
 							<b-button variant="dark"> <b-icon-skip-backward-fill font-scale="2" variant="light"></b-icon-skip-backward-fill> </b-button>
 							<b-button variant="dark"> <b-icon-play-fill rotate="180" font-scale="2" variant="light"></b-icon-play-fill> </b-button>
 							<b-button @click="flipBoard()" variant="dark"> <b-icon-arrow-down-up font-scale="2" variant="light"></b-icon-arrow-down-up> </b-button>
-							<b-button variant="dark"> <b-icon-play-fill font-scale="2" variant="light"></b-icon-play-fill> </b-button>
+							<b-button @click="moveForward()" variant="dark"> <b-icon-play-fill font-scale="2" variant="light"></b-icon-play-fill> </b-button>
 							<b-button variant="dark"> <b-icon-skip-forward-fill font-scale="2" variant="light"></b-icon-skip-forward-fill > </b-button>
 						</b-button-group>
 					</div>
@@ -69,7 +69,8 @@
 					settings
 					<b-form>
 						<b-form-checkbox v-model="roomSettings.rules" size="sm" switch> chess rules </b-form-checkbox>
-						<b-form-checkbox v-model="localSettings.sendMouseLoc" size="sm" switch> show mouse </b-form-checkbox>
+						<b-form-checkbox v-model="localSettings.sendMouseLoc" size="sm" switch> share mouse </b-form-checkbox>
+						<b-form-checkbox v-model="roomSettings.shareDrawings" size="sm" switch> share drawings </b-form-checkbox>
 					</b-form>
 					
 				</div>
@@ -132,6 +133,7 @@
 			return {
 				roomSettings: {
 					rules: true,
+					shareDrawings: false,
 				},
 				localSettings: {
 					sendMouseLoc: false,
@@ -198,6 +200,10 @@
 
 			},
 
+			moveForward() {
+				console.log(this.$refs.board.board.state.drawable.shapes);
+			},
+
 			joinRoom() {
 				this.startup = false;
 
@@ -215,6 +221,15 @@
 				this.startup = false;
 				this.roomCode = this.$peer.id;
 				this.$nextTick(() => { this.initDataConnection(); });
+			},
+
+			onBoardDraw(shapes) {
+
+				if (this.roomSettings.shareDrawings && !this.settingsChangeRecieved) {
+					this.dataConnection.send({shapes: shapes});
+				}
+				this.settingsChangeRecieved = false;
+
 			},
 
 			onMove(move) {
@@ -256,6 +271,10 @@
 				}
 				if (data.roomSettings) {
 					this.roomSettings = data.roomSettings;
+					this.settingsChangeRecieved = true;
+				}
+				if (data.shapes) {
+					this.$refs.board.updateShapes(data.shapes);
 					this.settingsChangeRecieved = true;
 				}
 			}

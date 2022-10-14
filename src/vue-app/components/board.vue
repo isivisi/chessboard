@@ -88,6 +88,13 @@
 
 			orientation: function(newOrientation) {
 				 this.board.set({ orientation: newOrientation });
+			},
+			
+			'board.state.drawable.shapes': {
+				handler() {
+					this.$emit('onDraw', this.board.state.drawable.shapes);
+				},
+				deep:true
 			}
 		},
 
@@ -168,6 +175,11 @@
 
 				if (enabled) this.game.load(this.board.getFen());
 
+			},
+
+			updateShapes(shapes) {
+				this.board.state.drawable.shapes = shapes;
+				this.board.redrawAll();
 			},
 
 			onResize() {
