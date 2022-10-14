@@ -14,8 +14,11 @@
 				<div>
 					<b-form inline onsubmit="return false">
 						<b-form-input @keyup.enter="joinRoom"  v-model="roomCode" placeholder="Join with room ID" size="lg"></b-form-input> 
-						<div style="padding:10px;"> or </div>
-						<b-button @click="newRoom" variant="primary" size="lg">Create a new Room</b-button>
+						<template v-if="roomCode === ''">
+							<div style="padding:10px;"> or </div>
+							<b-button  @click="newRoom" variant="primary" size="lg">Create a new Room</b-button>
+						</template>
+						<b-button v-else variant="info" @click="joinRoom" size="lg" style="margin-left: 10px;">Join Room</b-button>
 					</b-form>
 				</div>
 
@@ -144,6 +147,8 @@
 				dataConnection: null,
 				boardState: null,
 
+				boardIterator: -1,
+
 				shownFen: "",
 				settingsChangeRecieved: false,
 			}
@@ -201,19 +206,19 @@
 			},
 
 			moveToNow() {
-
+				this.shownFen = this.boardStates[this.boardStates.length - 1];
 			},
 
 			moveToStart() {
-
+				this.shownFen = this.boardStates[0];
 			},
 
 			moveBackwards() {
-
+				this.shownFen = this.boardStates[0];
 			},
 
 			moveForward() {
-				
+				this.shownFen = this.boardStates[0];
 			},
 
 			joinRoom() {
@@ -238,10 +243,13 @@
 				this.$nextTick(() => { this.initDataConnection(); });
 			},
 
-			onBoardDraw(shapes) {
+			onBoardDraw(drawable) {
 
 				if (this.roomSettings.shareDrawings && !this.settingsChangeRecieved) {
-					this.dataConnection.send({shapes: shapes});
+					this.dataConnection.send({drawable: {
+						shapes: drawable.shapes,
+						current: drawable.current,
+					}});
 				}
 				this.settingsChangeRecieved = false;
 
@@ -287,8 +295,8 @@
 					this.roomSettings = data.roomSettings;
 					this.settingsChangeRecieved = true;
 				}
-				if (data.shapes) {
-					this.$refs.board.updateShapes(data.shapes);
+				if (data.drawable) {
+					this.$refs.board.updateShapes(data.drawable);
 					this.settingsChangeRecieved = true;
 				}
 				if (data.mouse) {

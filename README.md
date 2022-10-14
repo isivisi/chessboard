@@ -1,6 +1,6 @@
 # Chessboard
 
-Simple online chessboard using [PeerJS](https://github.com/peers/peerjs).
+Simple online chessboard for study and play using [PeerJS](https://github.com/peers/peerjs) and [Chessground](https://github.com/lichess-org/chessground). 
 
 [![Download](https://custom-icon-badges.herokuapp.com/badge/-Download-blue?style=for-the-badge&logo=download&logoColor=white "Download")](https://github.com/isivisi/chessboard/releases)
 

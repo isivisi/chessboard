@@ -89,13 +89,14 @@
 			orientation: function(newOrientation) {
 				 this.board.set({ orientation: newOrientation });
 			},
-			
-			'board.state.drawable.shapes': {
-				handler() {
-					this.$emit('onDraw', this.board.state.drawable.shapes);
+
+			'board.state.drawable': {
+				handler(value) {
+					this.$emit('onDraw', this.board.state.drawable);
 				},
 				deep:true
-			}
+			},
+		
 		},
 
 		methods: {
@@ -177,8 +178,9 @@
 
 			},
 
-			updateShapes(shapes) {
-				this.board.state.drawable.shapes = shapes;
+			updateShapes(drawable) {
+				this.board.state.drawable.shapes = drawable.shapes;
+				this.board.state.drawable.current = drawable.current;
 				this.board.redrawAll();
 			},
 
