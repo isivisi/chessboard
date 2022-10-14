@@ -143,6 +143,8 @@
 
 	"use strict";
 
+	const ipcRenderer = require('electron').ipcRenderer;
+
 	export default {
 		name: "App",
 
@@ -185,7 +187,16 @@
 					}});
 				}
 			};
+
+			// Let main process know that we are ready for inputs
+			ipcRenderer.send('ready', {});
 			
+			// when starting application from a deep link
+			ipcRenderer.on('joinRoom', (evt, message) => {
+				this.roomCode = message;
+				this.joinRoom();
+			});
+					
 		},
 
 		computed: {

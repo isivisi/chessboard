@@ -1,11 +1,12 @@
 "use strict";
 
 // Modules to control application life and create native browser window.
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, ipcMain } = require("electron");
 const { resolve } = require("path");
 const { format } = require("url");
 
 const isDev = process.env.NODE_ENV === "development";
+var mainWindow = null;
 
 app.commandLine.appendSwitch('no-sandbox');
 
@@ -21,21 +22,28 @@ if (isDev && process.platform === 'win32') {
 
 app.on('open-url', function (event, url) {
 	event.preventDefault();
-	deeplinkingUrl = url;
 	console.log(url);
+	mainWindow.send('joinRoom', url.replace(`${deeplinkProtocol}://`, '').slice(0, -1));
 });
 
-app.on('second-instance', (e, argv) => {
+// once main vue application is ready for inputs
+ipcMain.on('ready', () => {
+
 	if (process.platform !== 'darwin') {
-		deeplinkingUrl = argv.find((arg) => arg.startsWith(`${deeplinkProtocol}://`));
-		console.log(url);
+		var deeplinkingUrl = process.argv.find((arg) => arg.startsWith(`${deeplinkProtocol}://`));
+	
+		if (deeplinkingUrl) {
+			console.log(deeplinkingUrl);
+			mainWindow.send('joinRoom', deeplinkingUrl.replace(`${deeplinkProtocol}://`, '').slice(0, -1));
+		}
 	}
+
 });
 
 const createWindow = () => {
 
 	// Create the browser window.
-	const mainWindow = new BrowserWindow({
+	mainWindow = new BrowserWindow({
 		width: 800,
 		height: 600,
 		icon: resolve(__dirname, "./assets/icon.png"),
