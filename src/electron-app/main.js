@@ -7,6 +7,15 @@ const { format } = require("url");
 
 app.commandLine.appendSwitch('no-sandbox');
 
+// setup chessboard://{roomCode} deeplink
+app.setAsDefaultProtocolClient('chessboard');
+
+app.on('open-url', function (event, url) {
+	event.preventDefault();
+	deeplinkingUrl = url;
+	console.log(url);
+  });
+
 const createWindow = () => {
 
 	// Create the browser window.
@@ -18,7 +27,7 @@ const createWindow = () => {
 			nodeIntegration: true,
 			contextIsolation: false,
 		}
-	});
+	}); 
 
 	// Remove menu from browser window.
 	if (process.env.NODE_ENV != "development") mainWindow.setMenu(null);

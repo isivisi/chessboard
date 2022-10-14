@@ -54,13 +54,22 @@
 						<h3> Room <b-badge> {{roomCode}} </b-badge> </h3>
 					</div>
 
-					<div class="controls">
+					<div class="controls text-center">
 						<b-button-group size="sm">
-							<b-button @click="moveToStart()" variant="dark"> <b-icon-skip-backward-fill font-scale="2" variant="light"></b-icon-skip-backward-fill> </b-button>
-							<b-button @click="moveBackwards()" variant="dark"> <b-icon-play-fill rotate="180" font-scale="2" variant="light"></b-icon-play-fill> </b-button>
-							<b-button @click="flipBoard()" variant="dark"> <b-icon-arrow-down-up font-scale="2" variant="light"></b-icon-arrow-down-up> </b-button>
-							<b-button @click="moveForward()" variant="dark"> <b-icon-play-fill font-scale="2" variant="light"></b-icon-play-fill> </b-button>
-							<b-button @click="moveToNow()" variant="dark"> <b-icon-skip-forward-fill font-scale="2" variant="light"></b-icon-skip-forward-fill > </b-button>
+							<b-button @click="flipBoard()" variant="dark"><b-icon-back variant="light" size="sm"></b-icon-back> Flip Board </b-button>
+							<b-button @click="openFenModal()" variant="dark"> <b-icon-file-earmark-arrow-down-fill variant="light" size="sm"></b-icon-file-earmark-arrow-down-fill> Load FEN </b-button>
+						</b-button-group>
+					</div>
+
+					<div class="controls text-center">
+
+						<b-button-group size="sm">
+							<b-button @click="moveToStart()" variant="dark"> <b-icon-skip-backward-fill font-scale="1.5" variant="light"></b-icon-skip-backward-fill> </b-button>
+							<b-button @click="moveBackwards()" variant="dark"> <b-icon-play-fill rotate="180" font-scale="1.5" variant="light"></b-icon-play-fill> </b-button>
+							<b-button @click="pauseTimer()" variant="dark"> <b-icon-pause-fill font-scale="1.5" variant="light"></b-icon-pause-fill> </b-button>
+							<b-button @click="moveForward()" variant="dark"> <b-icon-play-fill font-scale="1.5" variant="light"></b-icon-play-fill> </b-button>
+							<b-button @click="moveToNow()" variant="dark"> <b-icon-skip-forward-fill font-scale="1.5" variant="light"></b-icon-skip-forward-fill > </b-button>
+						
 						</b-button-group>
 					</div>
 
@@ -106,7 +115,7 @@
 		grid-area: moves; 
 		display:flex; 
 		padding-top: 5px;
-		width:200px; 
+		min-width:200px; 
 		flex-direction: column;
 		justify-content: space-between;
 	}
@@ -119,6 +128,11 @@
 	.you {
 		height: 25px;
 		width:100%;
+	}
+
+	.controls {
+		margin-left: auto;
+		margin-right: auto;
 	}
 
 

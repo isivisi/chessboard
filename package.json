@@ -30,7 +30,15 @@
 		"directories": {
 			"buildResources": "dist",
 			"output": "build"
-		}
+		},
+		"protocols": [
+			{
+			  "name": "chessboard",
+			  "schemes": [
+				"chessboard"
+			  ]
+			}
+		  ]
 	},
 	"repository": {
 		"type": "git",
