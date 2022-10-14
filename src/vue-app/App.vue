@@ -50,8 +50,8 @@
 			<div class="aside" id="aside">
 				<div>
 
-					<div> 
-						<h3 :title="roomCodeURL"> Room <b-badge @click="copyCodeToClipboard"> {{roomCode}} </b-badge> </h3>
+					<div class="text-center"> 
+						<h3> Room {{roomCode}} <b-button :title="roomCodeURL" size="sm" class="mb-2"> <b-icon-clipboard @click="copyCodeToClipboard"></b-icon-clipboard> </b-button> </h3>
 					</div>
 
 					<div class="controls text-center">
