@@ -8,13 +8,27 @@ const { format } = require("url");
 app.commandLine.appendSwitch('no-sandbox');
 
 // setup chessboard://{roomCode} deeplink
-app.setAsDefaultProtocolClient('chessboard');
+const deeplinkProtocol = 'chessboard';
+if (isDev && process.platform === 'win32') {
+	app.setAsDefaultProtocolClient(deeplinkProtocol, process.execPath, [
+	  resolve(process.argv[1])
+	]);
+  } else {
+	app.setAsDefaultProtocolClient(deeplinkProtocol);
+  }
 
 app.on('open-url', function (event, url) {
 	event.preventDefault();
 	deeplinkingUrl = url;
 	console.log(url);
-  });
+});
+
+app.on('second-instance', (e, argv) => {
+	if (process.platform !== 'darwin') {
+		deeplinkingUrl = argv.find((arg) => arg.startsWith(`${deeplinkProtocol}://`));
+		console.log(url);
+	}
+});
 
 const createWindow = () => {
 
