@@ -51,7 +51,7 @@
 				<div>
 
 					<div> 
-						<h3 :title="roomCodeURL"> Room <b-badge> {{roomCode}} </b-badge> </h3>
+						<h3 :title="roomCodeURL"> Room <b-badge @click="copyCodeToClipboard"> {{roomCode}} </b-badge> </h3>
 					</div>
 
 					<div class="controls text-center">
@@ -144,6 +144,7 @@
 	"use strict";
 
 	const ipcRenderer = require('electron').ipcRenderer;
+	const { clipboard } = require('electron');
 
 	export default {
 		name: "App",
@@ -226,6 +227,10 @@
 		},
 
 		methods: {
+
+			copyCodeToClipboard() {
+				clipboard.writeText(this.roomCodeURL);
+			},
 
 			flipBoard() {
 				
