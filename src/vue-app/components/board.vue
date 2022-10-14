@@ -30,7 +30,7 @@
 
 	import '@/styles/pieces/staunty.css';
 
-	import { Chess, SQUARES } from 'chess.js';
+	import { Chess, SQUARES, validateFen } from 'chess.js';
 
 	export default {
 		name: "board",
@@ -118,7 +118,8 @@
 
 			onMoved() {
 				return (orig, dest, metadata) => {
-					var move = this.game.move({from: orig, to: dest})
+					var move = this.game.move({from: orig, to: dest});
+					var gameHistory = this.game.history();
 
 					if (this.rules) this.board.set({fen: this.game.fen()});
 
@@ -132,11 +133,18 @@
 
 					if (!move && this.rules) return;
 
-					this.history.push(dest);
+					if (this.rules) this.history.push(gameHistory[gameHistory.length - 1]);
 
 					this.$emit('onMove', {
-						history: this.history, 
+						history: this.history,
 						fen: this.rules ? this.game.fen() : this.board.getFen(),
+						game: {
+							gameOver: this.game.isGameOver(),
+							inCheck: this.game.isCheck(),
+							inCheckmate: this.game.isCheckmate(),
+							inDraw: this.game.isDraw(),
+							inRepitition: this.game.isThreefoldRepetition(),
+						},
 					});
 				}
 			},
@@ -165,6 +173,15 @@
 
 			setRulesEnabled(enabled) {
 
+				var gameFen = this.board.getFen() + ` ${this.game.turn()} KQkq - 0 1`;
+
+				var validFen = validateFen(gameFen);
+				
+				if (!validFen.valid) {
+					console.error(validFen);
+					return;
+				}
+
 				this.rules = enabled;
 
 				this.board.set({
@@ -174,7 +191,7 @@
 					}
 				});
 
-				if (enabled) this.game.load(this.board.getFen());
+				if (enabled) this.game = new Chess(gameFen);
 
 			},
 
@@ -187,6 +204,10 @@
 			onResize() {
 				this.board.redrawAll();
 			},
+
+			placePiece(piece) {
+				this.game.put(piece, piece.position);
+			}
 
 		}
 	};
