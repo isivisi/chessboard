@@ -51,7 +51,7 @@
 				<div>
 
 					<div> 
-						<h3> Room <b-badge> {{roomCode}} </b-badge> </h3>
+						<h3 :title="roomCodeURL"> Room <b-badge> {{roomCode}} </b-badge> </h3>
 					</div>
 
 					<div class="controls text-center">
@@ -203,6 +203,10 @@
 
 			moves() {
 				return this.$refs.board ? this.$refs.board.history : [];
+			},
+
+			roomCodeURL() {
+				return `https://isivisi.github.io/chessboard/joinroom?roomCode=${this.roomCode}`;
 			}
 
 		},
