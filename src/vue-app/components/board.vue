@@ -137,12 +137,15 @@
 			onMoved() {
 				return (orig, dest, metadata) => {
 
+					var move = null;
+
 					var promoteTo = null;
 					if (this.isPromotion(orig, dest)) {
-						promoteTo = 'q';
+						move = this.game.move({from: orig, to: dest, promotion: 'q'});
+					} else {
+						move = this.game.move({from: orig, to: dest});
 					}
 
-					var move = this.game.move({from: orig, to: dest, promotion: promoteTo});
 					var gameHistory = this.game.history();
 
 					if (this.rules) this.board.set({fen: this.game.fen()});

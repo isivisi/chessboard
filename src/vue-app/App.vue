@@ -29,6 +29,17 @@
 		</div>
 		<div v-else id="app">
 
+			<b-modal id="gameOverModal" hide-footer>
+				<template #modal-title>
+					Game Over
+				</template>
+				<div class="d-block text-center">
+				<h3>Someone has won :D</h3>
+				</div>
+				<b-button variant="success" class="mt-3" block @click="$bvModal.hide('gameOverModal')">Reset Board</b-button>
+				<b-button variant="secondary" class="mt-3" block @click="$bvModal.hide('gameOverModal')">Close</b-button>
+			</b-modal>
+
 			<div class="boardarea">
 				<b-row>
 					<div class="opponent">
@@ -148,6 +159,8 @@
 
 	const ipcRenderer = require('electron').ipcRenderer;
 	const { clipboard } = require('electron');
+
+	const movePieceAudio = require('@/assets/movePiece.ogg');
 
 	export default {
 		name: "App",
@@ -313,15 +326,31 @@
 
 			},
 
+			playSound(soundFile) {
+				var audio = new Audio(soundFile);
+				audio.loop = false;
+				audio.play(); 
+			},
+
 			onMove(move) {
-				this.boardState = move;
-				this.$refs.movelist.addState(move);
-				this.boardStates.push(move);
-				this.boardIterator = this.boardStates.length - 1;
+				this.setGameState(move);
+
+				this.playSound(movePieceAudio);
+
 				if (this.dataConnection) {
 					console.log('sending state');
 					this.dataConnection.send({boardState:move});
 				}
+			},
+
+			setGameState(state) {
+				this.boardState = state;
+				this.$refs.movelist.addState(state);
+				this.boardStates.push(state);
+				this.boardIterator = this.boardStates.length - 1;
+
+				if (this.boardState.game.gameOver) this.$bvModal.show('gameOverModal');
+				if (this.boardState.game.isDraw) this.$bvModal.show('drawModal');
 			},
 
 			initDataConnection() {
@@ -344,14 +373,13 @@
 			onData(data) {
 				if (!data.mouse) console.log(data);
 				if (data.boardState) { 
-					this.boardState = data.boardState;
 					this.shownFen = data.boardState.fen;
-					this.$refs.movelist.addState(data.boardState);
-					this.boardStates.push(data.boardState);
-					this.boardIterator = this.boardStates.length - 1;
+					this.setGameState(data.boardState);
+					this.playSound(movePieceAudio);
 				}
 				if (data.boardStates) {
 					this.$refs.movelist.setBoardStates(data.boardStates);
+					this.playSound(movePieceAudio);
 					this.boardStates = data.boardStates;
 				}
 				if (data.roomSettings) {
