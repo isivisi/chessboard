@@ -198,6 +198,10 @@
 				if (enabled) this.loadPosition(gameFen);
 
 			},
+			
+			set(values) {
+				this.board.set(values);
+			},
 
 			updateShapes(drawable) {
 				this.board.state.drawable.shapes = drawable.shapes;

@@ -164,9 +164,13 @@
 				roomCode: "",
 				dataConnection: null,
 				boardState: null,
-				boardStates: [],
+				boardStates: [
+					{
+						fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+					}
+				],
 
-				boardIterator: -1,
+				boardIterator: 0,
 
 				shownFen: "",
 				settingsChangeRecieved: false,
@@ -225,6 +229,13 @@
 
 			'roomSettings.rules': function() {
 				this.$refs.board.setRulesEnabled(this.roomSettings.rules);
+			},
+
+			boardIterator: function() {
+				// only allow moving pieces when looking at active state
+				this.$refs.board.set({
+					viewOnly: this.boardIterator < this.boardStates.length-1,
+				});
 			}
 		},
 
@@ -254,12 +265,14 @@
 
 			moveBackwards() {
 				if (this.boardIterator <= 0) return;
-				this.shownFen = this.boardStates[--this.boardIterator].fen;
+				this.boardIterator--;
+				this.shownFen = this.boardStates[this.boardIterator].fen;
 			},
 
 			moveForward() {
-				if (this.boardIterator >= this.boardStates.length) return;
-				this.shownFen = this.boardStates[this.boardIterator++].fen;
+				if (this.boardIterator >= this.boardStates.length-1) return;
+				this.boardIterator++;
+				this.shownFen = this.boardStates[this.boardIterator].fen;
 			},
 
 			joinRoom() {
@@ -302,7 +315,7 @@
 				this.boardState = move;
 				this.$refs.movelist.addState(move);
 				this.boardStates.push(move);
-				this.boardIterator = this.boardStates.length;
+				this.boardIterator = this.boardStates.length - 1;
 				if (this.dataConnection) {
 					console.log('sending state');
 					this.dataConnection.send({boardState:move});
@@ -333,6 +346,7 @@
 					this.shownFen = data.boardState.fen;
 					this.$refs.movelist.addState(data.boardState);
 					this.boardStates.push(data.boardState);
+					this.boardIterator = this.boardStates.length - 1;
 				}
 				if (data.boardStates) {
 					this.$refs.movelist.setBoardStates(data.boardStates);

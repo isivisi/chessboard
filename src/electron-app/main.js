@@ -23,7 +23,7 @@ if (isDev && process.platform === 'win32') {
 app.on('open-url', function (event, url) {
 	event.preventDefault();
 	console.log(url);
-	mainWindow.send('joinRoom', url.replace(`${deeplinkProtocol}://`, '').slice(0, -1));
+	mainWindow.send('joinRoom', url.replace(`${deeplinkProtocol}://`, '').replace('/', ''));
 });
 
 // once main vue application is ready for inputs
@@ -34,7 +34,7 @@ ipcMain.on('ready', () => {
 	
 		if (deeplinkingUrl) {
 			console.log(deeplinkingUrl);
-			mainWindow.send('joinRoom', deeplinkingUrl.replace(`${deeplinkProtocol}://`, '').slice(0, -1));
+			mainWindow.send('joinRoom', deeplinkingUrl.replace(`${deeplinkProtocol}://`, '').replace('/', ''));
 		}
 	}
 
