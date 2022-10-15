@@ -50,8 +50,8 @@
 			<div class="aside" id="aside">
 				<div>
 
-					<div> 
-						<h3> Room <b-badge> {{roomCode}} </b-badge> </h3>
+					<div class="text-center"> 
+						<h3> Room {{roomCode}} <b-button :title="roomCodeURL" size="sm" class="mb-2"> <b-icon-clipboard @click="copyCodeToClipboard"></b-icon-clipboard> </b-button> </h3>
 					</div>
 
 					<div class="controls text-center">
@@ -144,6 +144,9 @@
 
 	"use strict";
 
+	const ipcRenderer = require('electron').ipcRenderer;
+	const { clipboard } = require('electron');
+
 	export default {
 		name: "App",
 
@@ -187,13 +190,26 @@
 					}});
 				}
 			};
+
+			// Let main process know that we are ready for inputs
+			ipcRenderer.send('ready', {});
 			
+			// when starting application from a deep link
+			ipcRenderer.on('joinRoom', (evt, message) => {
+				this.roomCode = message;
+				this.joinRoom();
+			});
+					
 		},
 
 		computed: {
 
 			moves() {
 				return this.$refs.board ? this.$refs.board.history : [];
+			},
+
+			roomCodeURL() {
+				return `https://isivisi.github.io/chessboard/joinroom?roomCode=${this.roomCode}`;
 			}
 
 		},
@@ -213,6 +229,10 @@
 		},
 
 		methods: {
+
+			copyCodeToClipboard() {
+				clipboard.writeText(this.roomCodeURL);
+			},
 
 			flipBoard() {
 				
