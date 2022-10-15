@@ -10,7 +10,7 @@ var crypto = require("crypto");
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
-const uniqueRoomKey = crypto.randomBytes(4).toString('hex').toUpperCase();
+const uniqueRoomKey = crypto.randomBytes(3).toString('hex').toUpperCase();
  
 Vue.use(VuePeerJS, new Peer(uniqueRoomKey, {}));
 Vue.use(BootstrapVue);

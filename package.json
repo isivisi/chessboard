@@ -1,6 +1,6 @@
 {
 	"name": "chessboard",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "Simple multiplayer chessboard",
 	"main": "dist/electron-app/main.js",
 	"scripts": {
@@ -22,7 +22,7 @@
 	},
 	"build": {
 		"appId": "app.id",
-		"productName": "App",
+		"productName": "chessboard",
 		"files": [
 			"dist/**/*",
 			"!node_modules${/*}"
