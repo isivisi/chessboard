@@ -29,12 +29,16 @@
 		</div>
 		<div v-else id="app">
 
-			<b-modal id="gameOverModal" hide-footer>
+			<b-modal header-text-variant="dark" body-text-variant="dark" id="gameOverModal" hide-footer>
 				<template #modal-title>
 					Game Over
 				</template>
 				<div class="d-block text-center">
-				<h3>Someone has won :D</h3>
+				<h3 v-if="boardState.game.inCheckmate">{{winner()}} has won!</h3>
+				<h3 v-else>Draw</h3>
+				<p v-if="boardState.game.inCheckmate"> won by checkmate. </p>
+				<p v-if="boardState.game.inRepitition"> draw by repitition </p>
+				<p v-if="boardState.game.insufficiantMaterial"> won by insufficiant material </p>
 				</div>
 				<b-button variant="success" class="mt-3" block @click="$bvModal.hide('gameOverModal')">Reset Board</b-button>
 				<b-button variant="secondary" class="mt-3" block @click="$bvModal.hide('gameOverModal')">Close</b-button>
@@ -159,6 +163,7 @@
 
 	const ipcRenderer = require('electron').ipcRenderer;
 	const { clipboard } = require('electron');
+	const { DEFAULT_POSITION } = require('chess.js');
 
 	const movePieceAudio = require('@/assets/movePiece.ogg');
 
@@ -178,11 +183,22 @@
 				startup: true,
 				roomCode: "",
 				dataConnection: null,
-				boardState: null,
+				boardState: {
+					fen: DEFAULT_POSITION,
+					game: {
+						gameOver: false,
+						inCheck: false,
+						inCheckmate: false,
+						inDraw: false,
+						inRepitition: false,
+						insufficiantMaterial: false,
+						turnColor: 'white',
+					}
+				},
 				boardStates: [
 					{
-						fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
-					}
+						fen: DEFAULT_POSITION,
+					},
 				],
 
 				boardIterator: 0,
@@ -255,6 +271,13 @@
 		},
 
 		methods: {
+
+			winner() {
+				if (this.boardState && this.boardState.game.gameOver) {
+					if (this.boardState.game.inCheckmate && !this.boardState.game.inDraw) return this.boardStates[this.boardStates.length-2].game.turnColor;
+				}
+				return null;
+			},
 
 			copyCodeToClipboard() {
 				clipboard.writeText(this.roomCodeURL);

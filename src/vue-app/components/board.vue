@@ -62,7 +62,10 @@
 				movable: {
 					dests: this.possibleMoves(),
 					showDests: true,
-				}
+				},
+				selectable: {
+					enabled: false,
+				},
 			});
 			
 			//this.board.set(config);
@@ -171,6 +174,8 @@
 							inCheckmate: this.game.isCheckmate(),
 							inDraw: this.game.isDraw(),
 							inRepitition: this.game.isThreefoldRepetition(),
+							insufficiantMaterial: this.game.isInsufficientMaterial(),
+							turnColor: this.toColor(),
 						},
 					});
 				}
