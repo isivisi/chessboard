@@ -115,7 +115,8 @@
 		grid-area: moves; 
 		display:flex; 
 		padding-top: 5px;
-		min-width:200px; 
+		min-width:200px;
+		max-width: 250px; 
 		flex-direction: column;
 		justify-content: space-between;
 	}
@@ -160,6 +161,7 @@
 				roomCode: "",
 				dataConnection: null,
 				boardState: null,
+				boardStates: [],
 
 				boardIterator: -1,
 
@@ -220,19 +222,24 @@
 			},
 
 			moveToNow() {
-				this.shownFen = this.boardStates[this.boardStates.length - 1];
+				if (this.boardIterator == this.boardStates.length-1) return;
+				this.shownFen = this.boardStates[this.boardStates.length - 1].fen;
+				this.boardIterator = this.boardStates.length -1;
 			},
 
 			moveToStart() {
-				this.shownFen = this.boardStates[0];
+				if (this.boardIterator <= 0) return;
+				this.shownFen = this.boardStates[0].fen;
 			},
 
 			moveBackwards() {
-				this.shownFen = this.boardStates[0];
+				if (this.boardIterator <= 0) return;
+				this.shownFen = this.boardStates[--this.boardIterator].fen;
 			},
 
 			moveForward() {
-				this.shownFen = this.boardStates[0];
+				if (this.boardIterator >= this.boardStates.length) return;
+				this.shownFen = this.boardStates[this.boardIterator++].fen;
 			},
 
 			joinRoom() {
@@ -259,6 +266,8 @@
 
 			onBoardDraw(drawable) {
 
+				if (!this.dataConnection) return;
+
 				if (this.roomSettings.shareDrawings && !this.settingsChangeRecieved) {
 					this.dataConnection.send({drawable: {
 						shapes: drawable.shapes,
@@ -272,6 +281,8 @@
 			onMove(move) {
 				this.boardState = move;
 				this.$refs.movelist.addState(move);
+				this.boardStates.push(move);
+				this.boardIterator = this.boardStates.length;
 				if (this.dataConnection) {
 					console.log('sending state');
 					this.dataConnection.send({boardState:move});
@@ -301,9 +312,11 @@
 					this.boardState = data.boardState;
 					this.shownFen = data.boardState.fen;
 					this.$refs.movelist.addState(data.boardState);
+					this.boardStates.push(data.boardState);
 				}
 				if (data.boardStates) {
 					this.$refs.movelist.setBoardStates(data.boardStates);
+					this.boardStates = data.boardStates;
 				}
 				if (data.roomSettings) {
 					this.roomSettings = data.roomSettings;
