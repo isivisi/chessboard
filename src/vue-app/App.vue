@@ -5,7 +5,9 @@
 
 			<b-jumbotron bg-variant="dark">
 
-				<template #header>chessboard</template>
+				<template #header class="text-center">
+					<img src="@/assets/logo.min.png" width="50" height="50"> <span class="display-4 fw-bold" style="font-weight: 700 !important;">Chessboard</span> 
+				</template>
 
 				<template #lead>
 					its chess

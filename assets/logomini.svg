@@ -1,0 +1,30 @@
+<svg width="512" height="512">
+    <g transform="translate(50, 50)">
+
+        <filter id="inset-shadow">
+            <!-- Shadow offset -->
+            <feOffset dx="0" dy="0"></feOffset>
+            <!-- Shadow blur -->
+            <feGaussianBlur stdDeviation="1" result="offset-blur"></feGaussianBlur>
+            <!-- Invert drop shadow to make an inset shadow-->
+            <feComposite operator="out" in="SourceGraphic" in2="offset-blur" result="inverse"></feComposite>
+            <!-- Cut colour inside shadow -->
+            <feFlood flood-color="black" flood-opacity=".95" result="color"></feFlood>
+            <feComposite operator="in" in="color" in2="inverse" result="shadow"></feComposite>
+            <!-- Placing shadow over element -->
+            <feComposite operator="over" in="shadow" in2="SourceGraphic"></feComposite> 
+        </filter>
+        
+        <rect rx="15" ry="15" filter="url(#inset-shadow)" width="195" height="195" style="fill-opacity:1;stroke-width:1;fill:#fff;"/>
+        <rect rx="15" ry="15" filter="url(#inset-shadow)" transform="translate(200, 0)" width="195" height="195" style="fill-opacity:1;stroke-width:1;fill:#198754;"/>
+        <rect rx="15" ry="15" filter="url(#inset-shadow)" transform="translate(0, 200)" width="195" height="195" style="fill-opacity:1;stroke-width:1;fill:#198754;"/>
+        <!-- <rect filter="url(#inset-shadow)" transform="translate(200, 200)" width="200" height="200" style="fill-opacity:1;stroke-width:1;fill:RGBA(240, 217, 181, 1)"/> -->
+
+        <!-- <rect rx="40" ry="40" width="400" height="400
+        " style="fill-opacity:0;stroke-width:25;stroke:rgba(25,25,25,1);" 
+        filter="drop-shadow(3px 5px 0px rgb(0 0 0 / 0.4))"/>
+        <line x1="202" y1="0" x2="202" y2="400" style="stroke:rgb(25,25,25);stroke-width:10"/>
+        <line x1="0" y1="202" x2="400" y2="202" style="stroke:rgb(25,25,25);stroke-width:10"/>
+        -->
+    </g>
+</svg>
