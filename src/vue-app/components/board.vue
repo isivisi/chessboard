@@ -100,16 +100,34 @@
 		},
 
 		methods: {
-			// https://github.com/vitogit/vue-chessboard/blob/master/src/components/chessboard/index.vue
+			// https://github.com/vitogit/vue-chessboard/blob/5c7db9becbde32f0ad234453b0a70c95090d0d73/src/components/chessboard/index.vue#L53
 			possibleMoves () {
 				const dests = {
 					get: function(value) { return this[value]; } // this is some kind of bug
 				}
 				SQUARES.forEach(s => {
-					const ms = this.game.moves({square: s, verbose: true})
-					if (ms.length) dests[s] = ms.map(m => m.to)
+					const ms = this.game.moves({square: s, verbose: true});
+					if (ms.length) dests[s] = ms.map(m => m.to);
 				})
 				return dests;
+			},
+
+			// https://github.com/vitogit/vue-chessboard/blob/5c7db9becbde32f0ad234453b0a70c95090d0d73/src/components/chessboard/index.vue#L93
+			calculatePromotions () {
+				let moves = this.game.moves({verbose: true});
+				var promotions = [];
+				for (let move of moves) {
+					if (move.promotion) {
+						promotions.push(move);
+					}
+				}
+				return promotions;
+			},
+
+			// https://github.com/vitogit/vue-chessboard/blob/5c7db9becbde32f0ad234453b0a70c95090d0d73/src/components/chessboard/index.vue#L102
+			isPromotion(orig, dest) {
+				let filteredPromotions = this.calculatePromotions().filter(move => move.from === orig && move.to === dest);
+				return filteredPromotions.length > 0; // The current movement is a promotion
 			},
 
 			toColor () {
@@ -118,7 +136,13 @@
 
 			onMoved() {
 				return (orig, dest, metadata) => {
-					var move = this.game.move({from: orig, to: dest});
+
+					var promoteTo = null;
+					if (this.isPromotion(orig, dest)) {
+						promoteTo = 'q';
+					}
+
+					var move = this.game.move({from: orig, to: dest, promotion: promoteTo});
 					var gameHistory = this.game.history();
 
 					if (this.rules) this.board.set({fen: this.game.fen()});
