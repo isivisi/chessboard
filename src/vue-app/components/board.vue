@@ -168,6 +168,7 @@
 					this.$emit('onMove', {
 						history: this.history,
 						fen: this.rules ? this.game.fen() : this.getBoardFen(),
+						move: this.history[this.history.length-1],
 						game: {
 							gameOver: this.game.isGameOver(),
 							inCheck: this.game.isCheck(),

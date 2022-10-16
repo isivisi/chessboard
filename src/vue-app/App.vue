@@ -166,6 +166,7 @@
 	const { DEFAULT_POSITION } = require('chess.js');
 
 	const movePieceAudio = require('@/assets/movePiece.ogg');
+	const takePieceAudio = require('@/assets/pieceTaken.ogg');
 
 	export default {
 		name: "App",
@@ -185,6 +186,7 @@
 				dataConnection: null,
 				boardState: {
 					fen: DEFAULT_POSITION,
+					move: '',
 					game: {
 						gameOver: false,
 						inCheck: false,
@@ -299,6 +301,7 @@
 			moveToStart() {
 				if (this.boardIterator <= 0) return;
 				this.shownFen = this.boardStates[0].fen;
+				this.boardIterator = 0;
 			},
 
 			moveBackwards() {
@@ -358,8 +361,6 @@
 			onMove(move) {
 				this.setGameState(move);
 
-				this.playSound(movePieceAudio);
-
 				if (this.dataConnection) {
 					console.log('sending state');
 					this.dataConnection.send({boardState:move});
@@ -372,8 +373,10 @@
 				this.boardStates.push(state);
 				this.boardIterator = this.boardStates.length - 1;
 
+				if (state.move.includes('x')) this.playSound(takePieceAudio);
+				else this.playSound(movePieceAudio);
+
 				if (this.boardState.game.gameOver) this.$bvModal.show('gameOverModal');
-				if (this.boardState.game.isDraw) this.$bvModal.show('drawModal');
 			},
 
 			initDataConnection() {
@@ -398,7 +401,6 @@
 				if (data.boardState) { 
 					this.shownFen = data.boardState.fen;
 					this.setGameState(data.boardState);
-					this.playSound(movePieceAudio);
 				}
 				if (data.boardStates) {
 					this.$refs.movelist.setBoardStates(data.boardStates);
