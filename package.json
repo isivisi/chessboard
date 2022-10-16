@@ -33,10 +33,10 @@
 		},
 		"protocols": [
 			{
-			  "name": "chessboard",
-			  "schemes": [
-				"chessboard"
-			  ]
+				"name": "chessboard",
+				"schemes": [
+					"chessboard"
+				]
 			}
 		]
 	},
@@ -70,7 +70,9 @@
 		"crypto": "^1.0.1",
 		"peerjs": "^1.4.7",
 		"vue": "^2.6.12",
-		"vue-peerjs": "^0.3.0"
+		"vue-peerjs": "^0.3.0",
+		"vuex-electron": "^1.0.3",
+		"vuex": "^3.0.1"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.11.6",
