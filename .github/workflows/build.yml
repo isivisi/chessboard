@@ -1,0 +1,36 @@
+name: Build/release
+
+on:
+  push:
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v1
+
+      - name: Install Node.js, NPM and Yarn
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10
+
+      - name: Building application for linux
+        run: npm run dist:l
+
+      - name: Building application for windows
+        run: npm run dist:w
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            chessboard*.AppImage
+            chessboard*.exe
