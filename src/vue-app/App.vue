@@ -44,6 +44,19 @@
 				<b-button variant="secondary" class="mt-3" block @click="$bvModal.hide('gameOverModal')">Close</b-button>
 			</b-modal>
 
+			<b-modal header-text-variant="dark" body-text-variant="dark" id="fenModal"  @show="fenToLoad = null" @hidden="fenToLoad = null" @ok="loadFEN">
+				<template #modal-title>
+					Input FEN
+				</template>
+
+				<form ref="form" @submit.stop.prevent="loadFEN">
+					<b-form-group label="FEN" label-for="fen-input" invalid-feedback="FEN is required">
+						<b-form-input id="fen-input" v-model="fenToLoad" required pattern="\s*^(((?:[rnbqkpRNBQKP1-8]+\/){7})[rnbqkpRNBQKP1-8]+)\s([b|w])\s(-|[K|Q|k|q]{1,4})\s(-|[a-h][1-8])\s(\d+\s\d+)$"></b-form-input>
+					</b-form-group>
+				</form>
+
+			</b-modal>
+
 			<div class="boardarea">
 				<b-row>
 					<div class="opponent">
@@ -74,7 +87,7 @@
 					<div class="controls text-center">
 						<b-button-group size="sm">
 							<b-button @click="flipBoard()" variant="dark"><b-icon-back variant="light" size="sm"></b-icon-back> Flip Board </b-button>
-							<b-button @click="openFenModal()" variant="dark"> <b-icon-file-earmark-arrow-down-fill variant="light" size="sm"></b-icon-file-earmark-arrow-down-fill> Load FEN </b-button>
+							<b-button @click="$bvModal.show('fenModal');" variant="dark"> <b-icon-file-earmark-arrow-down-fill variant="light" size="sm"></b-icon-file-earmark-arrow-down-fill> Load FEN </b-button>
 						</b-button-group>
 					</div>
 
@@ -206,6 +219,7 @@
 				boardIterator: 0,
 
 				shownFen: "",
+				fenToLoad: null,
 				settingsChangeRecieved: false,
 			}
 		},
@@ -314,6 +328,10 @@
 				if (this.boardIterator >= this.boardStates.length-1) return;
 				this.boardIterator++;
 				this.shownFen = this.boardStates[this.boardIterator].fen;
+			},
+
+			loadFEN() {
+				this.shownFen = this.fenToLoad;
 			},
 
 			joinRoom() {
